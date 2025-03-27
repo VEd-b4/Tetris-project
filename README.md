@@ -1,4 +1,4 @@
-#  Snake Game
+#  Tetris Game
 
 **Authors:**
 
