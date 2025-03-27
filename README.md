@@ -1,28 +1,56 @@
-# Tetris-project
+#  Snake Game
 
-# Tetris Game - Console Edition
+**Authors:**
 
-## Requirements
-- A C++ compiler that supports C++11 or later.
-- The program uses the Windows console for rendering, so it is only compatible with Windows operating systems.
+- Ved Bhoraniya: 202401242
+- Sukun Dalal: 202401217
+- Tanishk Dhawan: 202401224
+- Uma Sainitin Burra: 202401487
 
-## How to Compile
+---
 
-1. Make sure you have a C++ compiler installed (e.g., MinGW, Visual Studio).
-2. Open your terminal (Command Prompt or PowerShell).
-3. Navigate to the folder containing the source code.
-4. Compile the code using the following command (depending on your compiler):
-    - If using MinGW (GCC):
-      ```bash
-      g++ -o tetris_game tetris_game.cpp
-      ```
-    - If using Visual Studio's MSVC:
-      ```bash
-      cl tetris_game.cpp
-      ```
+##  Table of Contents
 
-## How to Run
+- [Controls](#controls)
+- [How to Compile & Run](#how-to-compile--run)
+- [How to Play](#how-to-play)
+- [Snippet](#snippet)
 
-After compilation, you can run the game with the following command:
-```bash
-./tetris_game
+---
+
+
+##  Controls
+
+Use the following keys to navigate the snake:
+
+- **W / Up Arrow** → Rotate
+- **S / Down Arrow** → Move the Block Down
+- **A / Left Arrow** → Move the Block Left
+- **D / Right Arrow** →Move the Block Right
+- **Esc** → Pause/Quit
+
+After Game Over:
+- **R** → Restart the Game
+
+---
+
+
+
+##  How to Compile & Run
+
+### **Using g++ (MinGW) on Windows**
+
+1. **Install MinGW**: Download and install [MinGW](http://www.mingw.org/) and add it to your system’s PATH.
+2. **Open Command Prompt**: Navigate to the folder containing `tetris-game.cpp`.
+3. **Compile the Program**:
+   ```bash
+   g++ main.cpp -o tetris-game.exe -std=c++11
+   
+
+
+## Snippet
+
+![image](https://github.com/user-attachments/assets/6945188b-059d-417e-a81d-caabb4fa289a)
+
+
+
