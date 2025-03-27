@@ -164,5 +164,45 @@ void moveLeft() { if (canMove(currentPiece, currentX - 1, currentY)) currentX--;
     }
 
 
+    void clearLines() {
+        int linesCleared = 0;
+        for (int y = HEIGHT - 1; y >= 0; --y) {
+            bool fullLine = true;
+            for (int x = 0; x < WIDTH; ++x)
+                if (!grid[y][x]) { fullLine = false; break; }
+
+            if (fullLine) {
+                grid.erase(grid.begin() + y);
+                grid.insert(grid.begin(), std::vector<int>(WIDTH, 0));
+                linesCleared++;
+                y++;
+            }
+        }
+        updateScore(linesCleared);
+    }
+
+    void updateScore(int linesCleared) {
+        score += (linesCleared == 1 ? 100 : linesCleared == 2 ? 300 : linesCleared == 3 ? 500 : linesCleared == 4 ? 800 : 0);
+        level = 1 + (score / 1000);
+    }
+
+    bool gameOver() {
+        isGameFinished = true;
+        std::cout << "GAME OVER! Final Score: " << score << "\nPress R to Replay or ESC to Exit\n";
+        while (true) {
+            if (_kbhit()) {
+                int key = _getch();
+                if (key == 'r' || key == 'R') return true;
+                if (key == 27) return false;
+            }
+        }
+    }
+};
+
+int main() {
+    TetrisGame game;
+    while (game.run());
+    return 0;
+}
 
 
