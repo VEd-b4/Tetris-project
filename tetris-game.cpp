@@ -107,3 +107,62 @@ public:
         }
     }
 
+
+void moveLeft() { if (canMove(currentPiece, currentX - 1, currentY)) currentX--; }
+    void moveRight() { if (canMove(currentPiece, currentX + 1, currentY)) currentX++; }
+
+    void rotate() {
+        Tetromino rotatedPiece = currentPiece;
+        std::vector<std::vector<int>> newShape(currentPiece.shape[0].size(), std::vector<int>(currentPiece.shape.size()));
+        for (size_t i = 0; i < currentPiece.shape.size(); ++i)
+            for (size_t j = 0; j < currentPiece.shape[i].size(); ++j)
+                newShape[j][currentPiece.shape.size() - 1 - i] = currentPiece.shape[i][j];
+
+        rotatedPiece.shape = newShape;
+        if (canMove(rotatedPiece, currentX, currentY)) currentPiece = rotatedPiece;
+    }
+
+    void update() {
+        dropTimer++;
+        if (dropTimer >= (20 - level)) {
+            if (!canMove(currentPiece, currentX, currentY + 1)) {
+                lockPiece();
+                clearLines();
+                spawnNewPiece();
+            } else currentY++;
+            dropTimer = 0;
+        }
+    }
+
+    void softDrop() {
+        if (canMove(currentPiece, currentX, currentY + 1)) currentY++;
+        else {
+            lockPiece();
+            clearLines();
+            spawnNewPiece();
+        }
+    }
+
+    void hardDrop() {
+        while (canMove(currentPiece, currentX, currentY + 1)) currentY++;
+        lockPiece();
+        clearLines();
+        spawnNewPiece();
+    }
+
+    void lockPiece() {
+        for (size_t y = 0; y < currentPiece.shape.size(); ++y)
+            for (size_t x = 0; x < currentPiece.shape[y].size(); ++x)
+                if (currentPiece.shape[y][x]) grid[currentY + y][currentX + x] = currentPiece.color;
+    }
+
+    void spawnNewPiece() {
+        currentPiece = Tetromino(getRandomTetromino());
+        currentX = WIDTH / 2;
+        currentY = 0;
+        if (!canMove(currentPiece, currentX, currentY)) gameOver();
+    }
+
+
+
+
