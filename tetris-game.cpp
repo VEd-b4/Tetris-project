@@ -24,35 +24,36 @@ public:
     }
 
 private:
+    // Method to set up the shape and color for each Tetromino type
     void initializeShape() {
         switch(type) {
-            case TetrominoType::I:
+            case TetrominoType::I:  // Long straight piece - Cyan
                 shape = {{1,1,1,1}};
-                color = 1;
+                color = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
                 break;
-            case TetrominoType::O:
+            case TetrominoType::O:  // Square piece - Yellow
                 shape = {{1,1},{1,1}};
-                color = 2;
+                color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
                 break;
-            case TetrominoType::T:
+            case TetrominoType::T:  // T-shaped piece - Magenta
                 shape = {{0,1,0},{1,1,1}};
-                color = 3;
+                color = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
                 break;
-            case TetrominoType::S:
+            case TetrominoType::S:  // S-shaped piece - Green
                 shape = {{0,1,1},{1,1,0}};
-                color = 4;
+                color = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
                 break;
-            case TetrominoType::Z:
+            case TetrominoType::Z:  // Z-shaped piece - Red
                 shape = {{1,1,0},{0,1,1}};
-                color = 5;
+                color = FOREGROUND_RED | FOREGROUND_INTENSITY;
                 break;
-            case TetrominoType::J:
+            case TetrominoType::J:  // J-shaped piece - Blue
                 shape = {{1,0,0},{1,1,1}};
-                color = 6;
+                color = FOREGROUND_BLUE | FOREGROUND_INTENSITY;
                 break;
-            case TetrominoType::L:
+            case TetrominoType::L:  // L-shaped piece - Dark Yellow/Orange
                 shape = {{0,0,1},{1,1,1}};
-                color = 7;
+                color = FOREGROUND_RED | FOREGROUND_GREEN;
                 break;
         }
     }
@@ -298,7 +299,7 @@ public:
         if (dropTimer >= (20 - level)) {
             if (!canMove(currentPiece, currentX, currentY + 1)) {
                 lockPiece();
-                clearLines();
+                removeLine();
                 spawnNewPiece();
             } else {
                 currentY++;
@@ -312,7 +313,7 @@ public:
             currentY++;
         } else {
             lockPiece();
-            clearLines();
+            removeLine();
             spawnNewPiece();
         }
     }
@@ -322,7 +323,7 @@ public:
             currentY++;
         }
         lockPiece();
-        clearLines();
+        removeLine();
         spawnNewPiece();
     }
 
@@ -336,7 +337,7 @@ public:
         }
     }
 
-    void clearLines() {
+    void removeLine() {
         int linesCleared = 0;
         for (int y = HEIGHT - 1; y >= 0; --y) {
             bool fullLine = true;
@@ -400,11 +401,11 @@ public:
         // Clear console buffer
         ZeroMemory(consoleBuffer, consoleBufferSize.X * consoleBufferSize.Y * sizeof(CHAR_INFO));
         
-        // Write game over message
-        writeStringToBuffer(0, 0, "GAME OVER!");
+        // Write game over message with red color
+        writeStringToBuffer(0, 0, "GAME OVER!", FOREGROUND_RED | FOREGROUND_INTENSITY);
         std::string scoreMsg = "Final Score: " + std::to_string(score);
-        writeStringToBuffer(0, 1, scoreMsg);
-        writeStringToBuffer(0, 2, "Press R to Replay or ESC to Exit");
+        writeStringToBuffer(0, 1, scoreMsg, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        writeStringToBuffer(0, 2, "Press R to Replay or ESC to Exit", FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 
         // Update console
         COORD bufferCoord = {0, 0};
@@ -430,15 +431,16 @@ public:
         ZeroMemory(consoleBuffer, consoleBufferSize.X * consoleBufferSize.Y * sizeof(CHAR_INFO));
         
         // Render game info
-        writeStringToBuffer(0, 0, "TETRIS GAME");
-        writeStringToBuffer(0, 1, "Score: " + std::to_string(score) + " | Level: " + std::to_string(level));
-        writeStringToBuffer(0, 2, "----------------------");
+        writeStringToBuffer(0, 0, "TETRIS GAME", FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+        writeStringToBuffer(0, 1, "Score: " + std::to_string(score) + " | Level: " + std::to_string(level), FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
+        writeStringToBuffer(0, 2, "----------------------", FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 
         // Render grid
         for (int y = 0; y < HEIGHT; ++y) {
-            writeStringToBuffer(0, y + 3, "|");
+            writeStringToBuffer(0, y + 3, "|", FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
             for (int x = 0; x < WIDTH; ++x) {
                 bool pieceHere = false;
+                int blockColor = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
                 
                 // Check if current piece is at this position
                 for (size_t py = 0; py < currentPiece.shape.size(); ++py) {
@@ -447,6 +449,7 @@ public:
                             y == currentY + py && 
                             x == currentX + px) {
                             pieceHere = true;
+                            blockColor = currentPiece.color;
                             break;
                         }
                     }
@@ -455,22 +458,25 @@ public:
 
                 // Render only current and locked pieces
                 if (pieceHere) {
-                    writeStringToBuffer(1 + x * 2, y + 3, "[]");
+                    writeStringToBuffer(1 + x * 2, y + 3, "[]", blockColor);
                 } else if (grid[y][x]) {
-                    writeStringToBuffer(1 + x * 2, y + 3, "[]");
+                    writeStringToBuffer(1 + x * 2, y + 3, "[]", grid[y][x]);
                 }
             }
-            writeStringToBuffer(1 + WIDTH * 2, y + 3, "|");
+            writeStringToBuffer(1 + WIDTH * 2, y + 3, "|", FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
         }
-        writeStringToBuffer(0, HEIGHT + 3, "----------------------");
+        writeStringToBuffer(0, HEIGHT + 3, "----------------------", FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 
         // Render pause menu
         if (isPaused) {
-            writeStringToBuffer(0, HEIGHT + 4, "PAUSE MENU:");
-            writeStringToBuffer(0, HEIGHT + 5, pauseMenuSelection == 0 ? "> Continue" : "  Continue");
-            writeStringToBuffer(0, HEIGHT + 6, pauseMenuSelection == 1 ? "> Restart" : "  Restart");
-            writeStringToBuffer(0, HEIGHT + 7, pauseMenuSelection == 2 ? "> Exit" : "  Exit");
-            writeStringToBuffer(0, HEIGHT + 8, "Use arrows and Enter to select");
+            writeStringToBuffer(0, HEIGHT + 4, "PAUSE MENU:", FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+            writeStringToBuffer(0, HEIGHT + 5, pauseMenuSelection == 0 ? "> Continue" : "  Continue", 
+                pauseMenuSelection == 0 ? (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY) : (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE));
+            writeStringToBuffer(0, HEIGHT + 6, pauseMenuSelection == 1 ? "> Restart" : "  Restart", 
+                pauseMenuSelection == 1 ? (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY) : (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE));
+            writeStringToBuffer(0, HEIGHT + 7, pauseMenuSelection == 2 ? "> Exit" : "  Exit", 
+                pauseMenuSelection == 2 ? (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY) : (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE));
+            writeStringToBuffer(0, HEIGHT + 8, "Use arrows and Enter to select", FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
         }
 
         // Update console
@@ -478,10 +484,10 @@ public:
         WriteConsoleOutput(hConsole, consoleBuffer, consoleBufferSize, bufferCoord, &windowSize);
     }
 
-    void writeStringToBuffer(int x, int y, const std::string& text) {
+    void writeStringToBuffer(int x, int y, const std::string& text, int color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE) {
         for (size_t i = 0; i < text.length(); ++i) {
             consoleBuffer[y * consoleBufferSize.X + x + i].Char.AsciiChar = text[i];
-            consoleBuffer[y * consoleBufferSize.X + x + i].Attributes = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+            consoleBuffer[y * consoleBufferSize.X + x + i].Attributes = color;
         }
     }
 };
