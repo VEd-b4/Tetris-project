@@ -46,6 +46,28 @@ private:
 
     TetrominoType getRandomTetromino() { return static_cast<TetrominoType>(rand() % 7); }
 
+    bool canMove(const Tetromino& piece, int newX, int newY) {
+        for (size_t y = 0; y < piece.shape.size(); ++y) {
+            for (size_t x = 0; x < piece.shape[y].size(); ++x) {
+                if (piece.shape[y][x]) {
+                    int gridX = newX + x;
+                    int gridY = newY + y;
+
+                    // Check if the piece is outside the grid horizontally
+                    if (gridX < 0 || gridX >= WIDTH) return false;
+
+                    // Check if the piece is outside the grid vertically
+                    if (gridY >= HEIGHT) return false;
+
+                    // Check for collision with existing locked pieces
+                    if (gridY >= 0 && grid[gridY][gridX] != 0) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
 public:
     TetrisGame() : grid(HEIGHT, std::vector<int>(WIDTH, 0)), 
         currentPiece(getRandomTetromino()), currentX(WIDTH / 2), currentY(0),
