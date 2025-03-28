@@ -50,7 +50,8 @@ After Game Over:
 
 ## Snippet
 
-![image](https://github.com/user-attachments/assets/6945188b-059d-417e-a81d-caabb4fa289a)
+![image](https://github.com/user-attachments/assets/c24ac0a6-8b19-4988-8204-9dc71c930a83)
+
 
 
 
