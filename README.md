@@ -21,7 +21,7 @@
 
 ##  Controls
 
-Use the following keys to navigate the snake:
+Use the following keys to navigate the blocks:
 
 - **W / Up Arrow** → Rotate
 - **S / Down Arrow** → Move the Block Down
